@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tuk_em/screens/sub-screens/leave.dart';
+import 'package:tuk_em/screens/sub-screens/settings.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,7 +18,7 @@ class _HomePageState extends State<HomePage> {
     Center(child: Text('Home')),
     Center(child: LeaveApplication()),
     Center(child: Text('Profile')),
-    Center(child: Text('Settings')),
+    Center(child: Settings()),
   ];
 
   @override
