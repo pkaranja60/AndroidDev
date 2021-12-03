@@ -35,7 +35,7 @@ class _LeaveApplicationState extends State<LeaveApplication> {
             key: _formKey,
             child: Column(
               children: <Widget>[
-                Text(
+                const Text(
                   'Apply For Work Leave',
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
@@ -43,12 +43,12 @@ class _LeaveApplicationState extends State<LeaveApplication> {
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 TextFormField(
                   keyboardType: TextInputType.name,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'First Name',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
@@ -61,12 +61,12 @@ class _LeaveApplicationState extends State<LeaveApplication> {
                   },
                   onChanged: (val) => setState(() => _currentFirstName = val),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 25,
                 ),
                 TextFormField(
                   keyboardType: TextInputType.name,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Last Name',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
@@ -79,12 +79,12 @@ class _LeaveApplicationState extends State<LeaveApplication> {
                   },
                   onChanged: (val) => setState(() => _currentLastName = val),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 25,
                 ),
                 TextFormField(
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
@@ -97,12 +97,12 @@ class _LeaveApplicationState extends State<LeaveApplication> {
                   },
                   onChanged: (val) => setState(() => _currentEmail = val),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 25,
                 ),
                 TextFormField(
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Phone Number',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.phone),
@@ -115,7 +115,7 @@ class _LeaveApplicationState extends State<LeaveApplication> {
                   },
                   onChanged: (val) => setState(() => _currentNumber = val),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 25,
                 ),
                 DropdownButtonFormField(
@@ -132,12 +132,12 @@ class _LeaveApplicationState extends State<LeaveApplication> {
                     );
                   }).toList(),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 25,
                 ),
                 TextFormField(
                   keyboardType: TextInputType.name,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Duration',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
@@ -150,7 +150,7 @@ class _LeaveApplicationState extends State<LeaveApplication> {
                   },
                   onChanged: (val) => setState(() => _currentDuration = val),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 25,
                 ),
                 Container(
@@ -175,7 +175,7 @@ class _LeaveApplicationState extends State<LeaveApplication> {
                       print(_currentLeave);
                       print(_currentDuration);
                     },
-                    child: Text(
+                    child: const Text(
                       'Submit',
                       style: TextStyle(
                         color: Colors.white,

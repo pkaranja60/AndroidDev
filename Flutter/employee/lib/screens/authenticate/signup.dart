@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -11,13 +12,14 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey();
-  final TextEditingController _passwordController = new TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
-      new TextEditingController();
+      TextEditingController();
+  firebase_auth.FirebaseAuth firebaseAuth = firebase_auth.FirebaseAuth.instance;
 
   String email = "";
   String password = "";
-  bool isloading = false;
+  bool circular = false;
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +27,14 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Stack(
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.all(30),
+            padding: const EdgeInsets.all(30),
             child: Center(
               child: Form(
                 key: _formKey,
                 child: SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
-                      Text(
+                      const Text(
                         'New Here?',
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
@@ -40,7 +42,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           color: Colors.black,
                         ),
                       ),
-                      Text(
+                      const Text(
                         'Thank you for Registering',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
@@ -48,12 +50,12 @@ class _SignupScreenState extends State<SignupScreen> {
                           color: Colors.black,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Email',
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.email),
@@ -68,7 +70,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           setState(() => email = val);
                         },
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       TextFormField(
@@ -91,7 +93,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           setState(() => password = val);
                         },
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       TextFormField(
@@ -116,7 +118,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           setState(() => password = val);
                         },
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Container(
@@ -128,10 +130,30 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                         child: MaterialButton(
                           onPressed: () async {
-                            Navigator.pushNamed(context, '/login');
+                            setState(() {
+                              circular = true;
+                            });
+                            try {
+                              firebase_auth.UserCredential userCredential =
+                                  await firebaseAuth
+                                      .createUserWithEmailAndPassword(
+                                          email: email, password: password);
+                              setState(() {
+                                circular = false;
+                              });
+                              Navigator.pushNamed(context, '/login');
+                            } catch (e) {
+                              final snackbar =
+                                  SnackBar(content: Text(e.toString()));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackbar);
+                              setState(() {
+                                circular = false;
+                              });
+                            }
                           },
                           color: Colors.greenAccent[400],
-                          child: Text(
+                          child: const Text(
                             'Sign up',
                             style: TextStyle(
                               fontSize: 17,
@@ -140,10 +162,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
-                      Divider(
+                      const Divider(
                         color: Colors.black,
                         height: 10,
                       ),
@@ -161,7 +183,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             onPressed: () {
                               Navigator.pushNamed(context, '/login');
                             },
-                            child: Text('Login'),
+                            child: const Text('Login'),
                           ),
                         ],
                       ),
