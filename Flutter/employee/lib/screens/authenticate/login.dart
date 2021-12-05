@@ -61,6 +61,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             border: OutlineInputBorder(),
                             prefixIcon: Icon(Icons.email),
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
+                          },
                           onChanged: (val) {
                             setState(() => email = val);
                           }),
@@ -77,6 +83,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             prefixIcon: Icon(Icons.lock),
                             suffixIcon: Icon(Icons.remove_red_eye),
                           ),
+                          validator: (value) {
+                            if (value == null || value.length < 6) {
+                              return 'Password: minimum is 6 characters long';
+                            }
+                            return null;
+                          },
                           onChanged: (val) {
                             setState(() => password = val);
                           }),
@@ -109,22 +121,25 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: MaterialButton(
                           onPressed: () async {
-                            try {
-                              firebase_auth.UserCredential userCredential =
-                                  await firebaseAuth.signInWithEmailAndPassword(
-                                      email: email, password: password);
-                              setState(() {
-                                circular = false;
-                              });
-                              Navigator.pushNamed(context, '/home');
-                            } catch (e) {
-                              final snackbar =
-                                  SnackBar(content: Text(e.toString()));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackbar);
-                              setState(() {
-                                circular = false;
-                              });
+                            if (_formKey.currentState!.validate()) {
+                              try {
+                                firebase_auth.UserCredential userCredential =
+                                    await firebaseAuth
+                                        .signInWithEmailAndPassword(
+                                            email: email, password: password);
+                                setState(() {
+                                  circular = false;
+                                });
+                                Navigator.pushNamed(context, '/home');
+                              } catch (e) {
+                                final snackbar =
+                                    SnackBar(content: Text(e.toString()));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackbar);
+                                setState(() {
+                                  circular = false;
+                                });
+                              }
                             }
                           },
                           color: Colors.purpleAccent[100],

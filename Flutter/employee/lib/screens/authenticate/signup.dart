@@ -110,9 +110,6 @@ class _SignupScreenState extends State<SignupScreen> {
                           if (value == null || value.isEmpty) {
                             return 'This field is required';
                           }
-                          if (value != _passwordController) {
-                            return 'Password does not match with above field';
-                          }
                         },
                         onChanged: (val) {
                           setState(() => password = val);
@@ -130,26 +127,28 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                         child: MaterialButton(
                           onPressed: () async {
-                            setState(() {
-                              circular = true;
-                            });
-                            try {
-                              firebase_auth.UserCredential userCredential =
-                                  await firebaseAuth
-                                      .createUserWithEmailAndPassword(
-                                          email: email, password: password);
+                            if (_formKey.currentState!.validate()) {
                               setState(() {
-                                circular = false;
+                                circular = true;
                               });
-                              Navigator.pushNamed(context, '/login');
-                            } catch (e) {
-                              final snackbar =
-                                  SnackBar(content: Text(e.toString()));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackbar);
-                              setState(() {
-                                circular = false;
-                              });
+                              try {
+                                firebase_auth.UserCredential userCredential =
+                                    await firebaseAuth
+                                        .createUserWithEmailAndPassword(
+                                            email: email, password: password);
+                                setState(() {
+                                  circular = false;
+                                });
+                                Navigator.pushNamed(context, '/login');
+                              } catch (e) {
+                                final snackbar =
+                                    SnackBar(content: Text(e.toString()));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackbar);
+                                setState(() {
+                                  circular = false;
+                                });
+                              }
                             }
                           },
                           color: Colors.greenAccent[400],
