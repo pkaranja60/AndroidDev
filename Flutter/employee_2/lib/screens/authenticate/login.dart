@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parse_server_sdk/parse_server_sdk.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -11,13 +12,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final controllerUsername = TextEditingController();
+  final controllerPassword = TextEditingController();
 
-  String email = "";
-  String password = "";
-  bool isloading = false;
-  bool circular = false;
+  bool isLoggedIn = false;
 
   @override
   Widget build(BuildContext context) {
@@ -52,32 +50,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 10,
                       ),
                       TextFormField(
-                          keyboardType: TextInputType.emailAddress,
-                          controller: _emailController,
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.email),
-                          ),
-                          onChanged: (val) {
-                            setState(() => email = val);
-                          }),
+                        keyboardType: TextInputType.text,
+                        controller: controllerUsername,
+                        decoration: const InputDecoration(
+                          labelText: 'Username',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.person),
+                        ),
+                      ),
                       const SizedBox(
                         height: 10,
                       ),
                       TextFormField(
-                          keyboardType: TextInputType.visiblePassword,
-                          controller: _passwordController,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.lock),
-                            suffixIcon: Icon(Icons.remove_red_eye),
-                          ),
-                          onChanged: (val) {
-                            setState(() => password = val);
-                          }),
+                        keyboardType: TextInputType.visiblePassword,
+                        controller: controllerPassword,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Password',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.lock),
+                          suffixIcon: Icon(Icons.remove_red_eye),
+                        ),
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
@@ -106,9 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: MaterialButton(
-                          onPressed: () async {
-                            Navigator.pushNamed(context, '/home');
-                          },
+                          onPressed: isLoggedIn ? null : () => doUserLogin(),
                           color: Colors.purpleAccent[100],
                           child: const Text(
                             'Login',
@@ -154,5 +146,64 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
     );
+  }
+
+  void showSuccess(String messgae) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Success!'),
+          content: Text(messgae),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showError(String errorMessgae) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error!'),
+          content: Text(errorMessgae),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void doUserLogin() async {
+    final username = controllerUsername.text.trim();
+    final password = controllerPassword.text.trim();
+
+    final user = ParseUser(username, password, null);
+
+    var response = await user.login();
+
+    if (response.success) {
+      showSuccess('Successful Login');
+      setState(() {
+        isLoggedIn = true;
+      });
+      Navigator.pushNamed(context, '/home');
+    } else {
+      showError(response.error!.message);
+    }
   }
 }

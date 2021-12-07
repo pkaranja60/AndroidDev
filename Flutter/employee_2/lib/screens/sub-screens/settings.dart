@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parse_server_sdk/parse_server_sdk.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -10,6 +11,8 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  bool isLoggedIn = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,15 +29,13 @@ class _SettingsState extends State<Settings> {
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: MaterialButton(
-                  onPressed: () async {},
-                  color: Colors.lightBlue,
-                  // ignore: prefer_const_constructors
-                  child: Text(
+                  onPressed: !isLoggedIn ? null : () => doUserLogout(),
+                  color: Colors.lightGreenAccent[400],
+                  child: const Text(
                     'Sign Out',
-                    // ignore: prefer_const_constructors
                     style: TextStyle(
                       fontSize: 17,
-                      color: Colors.white,
+                      color: Colors.lightBlue,
                     ),
                   ),
                 ),
@@ -44,5 +45,60 @@ class _SettingsState extends State<Settings> {
         ],
       ),
     );
+  }
+
+  void showSuccess(String messgae) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Success!'),
+          content: Text(messgae),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showError(String errorMessgae) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error!'),
+          content: Text(errorMessgae),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void doUserLogout() async {
+    final user = await ParseUser.currentUser() as ParseUser;
+    var response = await user.logout();
+
+    if (response.success) {
+      showSuccess('User was successfully logged out');
+      setState(() {
+        isLoggedIn = false;
+      });
+      Navigator.popAndPushNamed(context, '/login');
+    } else {
+      showError('response.error!.message');
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parse_server_sdk/parse_server_sdk.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -11,13 +12,9 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-
-  String email = "";
-  String password = "";
-  bool circular = false;
+  final controllerUsername = TextEditingController();
+  final controllerPassword = TextEditingController();
+  final controllerEmail = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -52,21 +49,25 @@ class _SignupScreenState extends State<SignupScreen> {
                         height: 10,
                       ),
                       TextFormField(
-                        keyboardType: TextInputType.emailAddress,
+                        controller: controllerUsername,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          labelText: 'Username',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.person),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextFormField(
+                        keyboardType: TextInputType.visiblePassword,
+                        controller: controllerEmail,
                         decoration: const InputDecoration(
                           labelText: 'Email',
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.email),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a valid email';
-                          }
-                          return null;
-                        },
-                        onChanged: (val) {
-                          setState(() => email = val);
-                        },
                       ),
                       const SizedBox(
                         height: 10,
@@ -74,47 +75,13 @@ class _SignupScreenState extends State<SignupScreen> {
                       TextFormField(
                         keyboardType: TextInputType.visiblePassword,
                         obscureText: true,
-                        controller: _passwordController,
+                        controller: controllerPassword,
                         decoration: const InputDecoration(
                           labelText: 'Password',
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.lock),
                           suffixIcon: Icon(Icons.remove_red_eye),
                         ),
-                        validator: (value) {
-                          if (value == null || value.length < 6) {
-                            return 'Password: minimum is 6 characters long';
-                          }
-                          return null;
-                        },
-                        onChanged: (val) {
-                          setState(() => password = val);
-                        },
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.visiblePassword,
-                        obscureText: true,
-                        controller: _confirmPasswordController,
-                        decoration: const InputDecoration(
-                          labelText: 'Confirm Password',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.lock),
-                          suffixIcon: Icon(Icons.remove_red_eye),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'This field is required';
-                          }
-                          if (value != _passwordController) {
-                            return 'Password does not match with above field';
-                          }
-                        },
-                        onChanged: (val) {
-                          setState(() => password = val);
-                        },
                       ),
                       const SizedBox(
                         height: 20,
@@ -127,9 +94,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: MaterialButton(
-                          onPressed: () async {
-                            Navigator.pushNamed(context, '/login');
-                          },
+                          onPressed: () => doUserRegistration(),
                           color: Colors.greenAccent[400],
                           child: const Text(
                             'Sign up',
@@ -174,5 +139,62 @@ class _SignupScreenState extends State<SignupScreen> {
         ],
       ),
     );
+  }
+
+  void showSuccess() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Success'),
+          content: const Text('User was successfully created'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showError(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error!'),
+          content: Text(errorMessage),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void doUserRegistration() async {
+    final username = controllerUsername.text.trim();
+    final email = controllerEmail.text.trim();
+    final password = controllerPassword.text.trim();
+
+    final user = ParseUser.createUser(username, password, email);
+
+    var response = await user.signUp();
+
+    if (response.success) {
+      showSuccess();
+      Navigator.pushNamed(context, '/login');
+    } else {
+      showError(response.error!.message);
+    }
   }
 }
