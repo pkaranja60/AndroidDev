@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -11,10 +12,14 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  firebase_auth.FirebaseAuth firebaseAuth = firebase_auth.FirebaseAuth.instance;
 
   String email = "";
   String password = "";
   bool isloading = false;
+  bool circular = false;
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +55,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextFormField(
                           keyboardType: TextInputType.emailAddress,
+                          controller: _emailController,
                           decoration: const InputDecoration(
                             labelText: 'Email',
                             border: OutlineInputBorder(),
                             prefixIcon: Icon(Icons.email),
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
+                          },
                           onChanged: (val) {
                             setState(() => email = val);
                           }),
@@ -63,6 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextFormField(
                           keyboardType: TextInputType.visiblePassword,
+                          controller: _passwordController,
                           obscureText: true,
                           decoration: const InputDecoration(
                             labelText: 'Password',
@@ -70,6 +83,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             prefixIcon: Icon(Icons.lock),
                             suffixIcon: Icon(Icons.remove_red_eye),
                           ),
+                          validator: (value) {
+                            if (value == null || value.length < 6) {
+                              return 'Password: minimum is 6 characters long';
+                            }
+                            return null;
+                          },
                           onChanged: (val) {
                             setState(() => password = val);
                           }),
@@ -101,8 +120,27 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: MaterialButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/home');
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              try {
+                                firebase_auth.UserCredential userCredential =
+                                    await firebaseAuth
+                                        .signInWithEmailAndPassword(
+                                            email: email, password: password);
+                                setState(() {
+                                  circular = false;
+                                });
+                                Navigator.pushNamed(context, '/home');
+                              } catch (e) {
+                                final snackbar =
+                                    SnackBar(content: Text(e.toString()));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackbar);
+                                setState(() {
+                                  circular = false;
+                                });
+                              }
+                            }
                           },
                           color: Colors.purpleAccent[100],
                           child: const Text(

@@ -1,6 +1,7 @@
-// ignore_for_file: prefer_const_constructors., prefer_const_constructors
+import 'package:employee/screens/sub-screens/profile.dart';
 import 'package:flutter/material.dart';
 
+import 'index.dart';
 import '../sub-screens/leave.dart';
 import '../sub-screens/settings.dart';
 
@@ -17,17 +18,17 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
   final tabs = [
-    Center(child: Text('Home')),
-    Center(child: LeaveApplication()),
-    Center(child: Text('Profile')),
-    Center(child: Settings()),
+    const Center(child: IndexPage()),
+    const Center(child: LeaveApplication()),
+    const Center(child: Profile()),
+    const Center(child: Settings()),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Happy worker',
         ),
         backgroundColor: Colors.green[600],
@@ -42,19 +43,19 @@ class _HomePageState extends State<HomePage> {
           selectedFontSize: 13,
           // ignore: prefer_const_literals_to_create_immutables
           items: [
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
                 icon: Icon(Icons.home),
                 backgroundColor: Colors.blue,
                 label: 'Home'),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
                 icon: Icon(Icons.receipt),
                 backgroundColor: Colors.blue,
                 label: 'Leave Application'),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
                 icon: Icon(Icons.person),
                 backgroundColor: Colors.blue,
                 label: 'Profile'),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
                 icon: Icon(Icons.settings),
                 backgroundColor: Colors.blue,
                 label: 'Settings')

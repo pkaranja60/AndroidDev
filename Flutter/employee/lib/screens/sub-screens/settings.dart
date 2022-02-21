@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatefulWidget {
@@ -26,7 +27,9 @@ class _SettingsState extends State<Settings> {
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: MaterialButton(
-                  onPressed: () async {},
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                  },
                   color: Colors.lightBlue,
                   // ignore: prefer_const_constructors
                   child: Text(
